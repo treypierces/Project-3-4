@@ -1,0 +1,38 @@
+# Extensions
+
+*.o
+*.exe
+*.dll
+*.lnk
+*.obj
+*.pdb
+*.ilk
+*.out
+
+# Directories
+
+/.idea/
+/.vscode/
+/.vs/
+/build/
+/bin/
+[Dd]ebug/
+[Rr]elease/
+x64/
+cmake-build-*/
+CMakeFiles/
+/.history/
+/.cache/
+
+# Files
+
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+$RECYCLE.BIN/
+[Dd]esktop.ini
+.DS_Store
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
