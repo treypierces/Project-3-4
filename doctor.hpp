@@ -2,6 +2,7 @@
 #define DOCTOR_HPP
 
 #include <string>
+#include <iostream>
 
 class doctor {
     public: 
@@ -13,8 +14,9 @@ class doctor {
 
     
         doctor(std::string name, int id);
+        ~doctor();
 
-        void print();
+        std::ostream& print(std::ostream& os) const;
 
 };
 

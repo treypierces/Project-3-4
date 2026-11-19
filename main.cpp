@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <format>
+#include <utility>
 #include "doctor.hpp"
 #include "B_Tree.hpp"
 
@@ -30,39 +31,35 @@ using sf::Vector2f;
 using sf::Font;
 using sf::Event;
 
-//function used to draw an array to the screen using the rectangles that contain the text
-void draw_array(vector<shared_ptr<RectangleShape>>& visual_array, 
-                vector<shared_ptr<Text>>& text_array, 
-                double key, 
-                RectangleShape& key_rect, 
-                double A[], 
-                Font& font);
-
-
-
 //array size
-const int N = 10;
-
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 
 int main()
 {
-    //create an array to display to the screen
-    //double A[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-    //double A[] = {3, 7, 8, 2, 10, 5, 1, 6, 4, 9}; //test array
+    // initialize variables
+    string userinput = "";
+    bool doctor_lookup = true;
+    bool lookup_success = false;
 
-    //insertion sort init -> see else branch in sort
-    // int index = 0;
-    // int j = 1;
-    // int temp;
-    // int key = 0;
-    string userinput = "A";
+    B_Tree<doctor> doctor_tree;
+    doctor* doc1 = new doctor("Dr. Smith", 123);
+    doctor* doc2 = new doctor("Dr. Johnson", 456);
+    doctor_tree.insert(doc1);
+    doctor_tree.insert(doc2);
 
     //720p
     RenderWindow window(VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "DCH Hospital");
     window.setPosition({1200, 50});
 
+    //load font from a file
+    Font font;
+    if (!font.openFromFile("DejaVuSans.ttf")) {
+        cerr << "Error opening DejaVu Sans font" << endl;
+        return 1;
+    }
+
+    // ========================= GRAPHICS =========================
     //create play button triangle
     CircleShape play_button_triangle(10, 3);          //radius size, sides
     play_button_triangle.rotate(degrees(90));  
@@ -76,45 +73,28 @@ int main()
     play_button.setOutlineColor(Color::Black);
     play_button.setOutlineThickness(2.f);
 
+    //create user text input box
+    RectangleShape text_box({200.f, 50.f});
+    text_box.setPosition({20, 20});
+    text_box.setFillColor(Color::White);
+    text_box.setOutlineColor(Color::Black);
+    text_box.setOutlineThickness(2.f);  
+
+    // user input text
+    sf::Text sf_userin(font, userinput);
+    sf_userin.setPosition({20.f, 20.f});
+    sf_userin.setFillColor(Color::Black);
+
+    // lookup result text
+    sf::Text sf_lookup_result(font, "");
+    sf_lookup_result.setPosition({20.f, 80.f});
+    sf_lookup_result.setFillColor(Color::Black);
     
-    
-    //store rectangle objects for each visual element of the array
-    // vector<shared_ptr<RectangleShape>> visual_array;
-    
-    //store text objects for each textual element of the array
-    // vector<shared_ptr<Text>> text_array;
+    sf::Text sf_lookup_info(font, "");
+    sf_lookup_info.setPosition({20.f, 110.f});
+    sf_lookup_info.setFillColor(Color::Black);
 
-    //load font from a file
-    Font font;
-    if (!font.openFromFile("DejaVuSans.ttf")) {
-        cerr << "Error opening DejaVu Sans font" << endl;
-        return 1;
-    }
-
-    sf::Text text(font, userinput);
-    text.setPosition({20.f, 50.f});
-    text.setFillColor(Color::Black);
-
-    //draw blank squares where array text will go
-    // for(int i = 0; i < N; ++i){
-    //     auto rect = make_shared<RectangleShape>();
-        
-    //     //position with spacing
-    //     rect->setSize({80.f, 80.f});
-    //     rect->setPosition({50.f + (i * 120.f), 250.f});
-    //     rect->setFillColor(Color::White);
-    //     visual_array.push_back(rect);
-    // }
-
-    //rectangle to contain the key in insertion sort
-    // RectangleShape key_rect; 
-    // key_rect.setSize({80.f, 80.f});
-    // key_rect.setPosition({50.f, 150.f});
-    // key_rect.setFillColor(Color::White);
-    
-    // //draw the inital array
-    // draw_array(visual_array, text_array, key, key_rect, A, font);
-
+    // ========================= EVENT LOOP =========================
     while (window.isOpen())
     {
         while (const optional event = window.pollEvent())
@@ -132,7 +112,7 @@ int main()
                     // FIXME
                     // TIMESTEP
                     userinput.append("B");
-                    text.setString(userinput);
+                    sf_userin.setString(userinput);
                 }
             }}
 
@@ -174,12 +154,42 @@ int main()
                         if (!userinput.empty()) {
                             userinput.pop_back();
                         }
+                        break;
+                    case sf::Keyboard::Key::D:
+                        doctor_lookup = true;
+                        break;
+                    case sf::Keyboard::Key::P:
+                        doctor_lookup = false;
+                        break;
                     default:
                         break;                        
                 }
 
-                text.setString(userinput); 
+                if(userinput.length() > 10){
+                    userinput = userinput.substr(0, 10);
+                }
+
+                sf_userin.setString(userinput); 
             }
+        }
+
+
+        // Perform lookup
+        if (doctor_lookup) {
+            int lookup_id = (userinput.empty() ? 0 : std::stoi(userinput));
+            doctor* found_doctor = doctor_tree.find(lookup_id);
+            if (found_doctor) {
+                lookup_success = true;
+                sf_lookup_result.setString(format("Doctor Found: {}", found_doctor->name));
+                sf_lookup_info.setString(format("ID: {}", found_doctor->id));
+            } else {
+                lookup_success = false;
+                sf_lookup_result.setString("Doctor Not Found");
+                sf_lookup_info.setString("");
+            }
+        } else {
+            sf_lookup_result.setString("");
+            sf_lookup_info.setString("");
         }
 
         //reset the window
@@ -188,59 +198,16 @@ int main()
         //draw buttons
         window.draw(play_button);
         window.draw(play_button_triangle);
-        // window.draw(key_rect);
-        window.draw(text);
 
-        //draw array and text
-        // for(int i = 0; i < N; ++i){
-        //     window.draw(*visual_array[i]);
-        //     window.draw(*text_array[i]);
-        // }
-        // window.draw(*text_array[N]);    
+        // draw search box
+        window.draw(text_box);
+        window.draw(sf_userin);
+
+        // draw search results
+        window.draw(sf_lookup_result);
+        window.draw(sf_lookup_info);
 
         //display all drawn objects
         window.display();
-    }
-}
-
-//input: rectangle array, text_array, key, the key rectangle object, array to display, font object
-//output: modified text array
-//return: N/A
-void draw_array(vector<shared_ptr<RectangleShape>>& visual_array, 
-                vector<shared_ptr<Text>>& text_array, 
-                double key, RectangleShape& key_rect, 
-                double A[], Font& font){
-    text_array.clear();
-    
-    //add key text first
-    auto text = make_shared<Text>( font , format("{:.2f}", key), 24);
-    
-    Vector2f shapeCenter = key_rect.getPosition() + (key_rect.getSize() / 2.0f);
-
-    //adjust
-    shapeCenter.x -= 20.f;
-    shapeCenter.y -= 10.f;
-
-    //set text
-    text->setPosition(shapeCenter);
-    text->setFillColor(Color::Black);
-
-    //update text array
-    text_array.push_back(text);
-
-    for(int i = 0; i < N; ++i){
-        //same process as above
-        auto rect = visual_array[i];
-        auto text = make_shared<Text>(font, format("{:.2f}", A[i]), 24);
-        
-        Vector2f shapeCenter = rect->getPosition() + (rect->getSize() / 2.0f);
-        shapeCenter.x -= 20.f;        
-        shapeCenter.y -= 10.f;        
-
-        text->setPosition(shapeCenter);
-        text->setFillColor(Color::Black);
-
-        //append new shape and text to vectors
-        text_array.push_back(text);
     }
 }

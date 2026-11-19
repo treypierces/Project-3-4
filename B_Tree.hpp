@@ -18,10 +18,12 @@ private:
     T* root;
 public:
     
-B_Tree(/* args */){
+B_Tree(){
     root = nullptr;
 };
-~B_Tree();
+~B_Tree(){
+    free(root);
+};
 
 
 void insert(T* new_node){
