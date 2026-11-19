@@ -5,6 +5,9 @@
 
 class doctor {
     public: 
+        doctor* left;
+        doctor* right;
+
         int id;
         std::string name;
 
