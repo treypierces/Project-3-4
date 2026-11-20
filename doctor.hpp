@@ -2,22 +2,31 @@
 #define DOCTOR_HPP
 
 #include <string>
-#include <iostream>
 
 class doctor {
-    public: 
-        doctor* left;
-        doctor* right;
+public:
+    std::string firstname;
+    std::string lastname;
+    std::string birthdate;
+    int skill;
+    int shift_start;
+    int shift_end;
+    int id;
 
-        int id;
-        std::string name;
+    doctor(std::string firstname,
+            std::string lastname,
+            std::string birthdate,
+            int skill,
+            int shift_start,
+            int shift_end,
+            int id);
 
-    
-        doctor(std::string name, int id);
-        ~doctor();
+    std::string print(); 
+};
 
-        std::ostream& print(std::ostream& os) const;
-
+struct DoctorPriority {
+    bool operator()(const doctor& left,
+                    const doctor& right) const;
 };
 
 #endif

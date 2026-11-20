@@ -44,23 +44,18 @@ int main()
     // initialize variables
     string userinput = "";
     bool doctor_lookup = true;
-    bool lookup_success = false;
+    int lookup_id = 0;
+    int time = 7; // hr of the day
 
     B_Tree<doctor> doctor_tree;
-    doctor* doc1 = new doctor("Dr. Smith", 123);
-    doctor* doc2 = new doctor("Dr. Johnson", 456);
-    doctor_tree.insert(doc1);
-    doctor_tree.insert(doc2);
+    B_Tree<patient> patient_tree;
 
     queue<patient> incoming_patients;
-
-    priority_queue<
-        patient,
-        vector<patient>,
-        PatientPriority> waiting_room;
+    
+    priority_queue< patient,vector<patient>,PatientPriority> waiting_room;
     
     load_patients(incoming_patients);
-
+    load_doctors(doctor_tree);
     
     //720p
     RenderWindow window(VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "DCH Hospital");
@@ -108,6 +103,22 @@ int main()
     sf_lookup_info.setPosition({20.f, 110.f});
     sf_lookup_info.setFillColor(Color::Black);
 
+    RectangleShape look_up_box({500.f, 300.f});
+    look_up_box.setPosition({10.f, 10.f});
+    look_up_box.setFillColor(Color::White);
+    look_up_box.setOutlineColor(Color::Black);
+    look_up_box.setOutlineThickness(2.f);  
+
+    // time text
+    sf::Text sf_time(font, "Time: " + std::to_string(time) + ":00");
+    sf_time.setPosition({WINDOW_WIDTH / 2.f - 75.f, WINDOW_HEIGHT * .90f - 25.f});
+    sf_time.setFillColor(Color::Black);
+
+    // information text
+    sf::Text sf_info(font, "Press 'D' to search for a doctor by ID\nPress 'P' to search for a patient by ID\nClick the play button to simulate time passing",20);
+    sf_info.setPosition({20.f, 350.f});
+    sf_info.setFillColor(Color::Black);
+
     // ========================= EVENT LOOP =========================
     while (window.isOpen())
     {
@@ -125,15 +136,13 @@ int main()
                 if (play_button.getGlobalBounds().contains(worldPos)) { // play button clicked
                     // FIXME
                     // TIMESTEP
+                    time++;
+                    sf_time.setString("Time: " + std::to_string(time) + ":00");
                     new_patients(waiting_room, incoming_patients);
-                    userinput.append("B");
-                    sf_userin.setString(userinput);
                 }
             }}
 
             if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-                //get shifts for our "player" when we press a key
-
                 switch(keyPressed->code){
                     case sf::Keyboard::Key::Num1:
                         userinput.append("1");
@@ -180,8 +189,8 @@ int main()
                         break;                        
                 }
 
-                if(userinput.length() > 10){
-                    userinput = userinput.substr(0, 10);
+                if(userinput.length() > 3){
+                    userinput = userinput.substr(0, 3);
                 }
 
                 sf_userin.setString(userinput); 
@@ -190,21 +199,25 @@ int main()
 
 
         // Perform lookup
+        lookup_id = (userinput.empty() ? 0 : std::stoi(userinput));
         if (doctor_lookup) {
-            int lookup_id = (userinput.empty() ? 0 : std::stoi(userinput));
             doctor* found_doctor = doctor_tree.find(lookup_id);
             if (found_doctor) {
-                lookup_success = true;
-                sf_lookup_result.setString(format("Doctor Found: {}", found_doctor->name));
-                sf_lookup_info.setString(format("ID: {}", found_doctor->id));
+                sf_lookup_result.setString("Doctor Found");
+                sf_lookup_info.setString(found_doctor->print());
             } else {
-                lookup_success = false;
                 sf_lookup_result.setString("Doctor Not Found");
                 sf_lookup_info.setString("");
             }
-        } else {
-            sf_lookup_result.setString("");
-            sf_lookup_info.setString("");
+        } else { // patient lookup
+            patient* found_patient = patient_tree.find(lookup_id);
+            if (found_patient) {
+                sf_lookup_result.setString("Patient Found");
+                sf_lookup_info.setString(found_patient->print());
+            } else {
+                sf_lookup_result.setString("Patient Not Found");
+                sf_lookup_info.setString("");
+            }
         }
 
         //reset the window
@@ -214,13 +227,20 @@ int main()
         window.draw(play_button);
         window.draw(play_button_triangle);
 
+        // draw search results
+        window.draw(look_up_box);
+        window.draw(sf_lookup_result);
+        window.draw(sf_lookup_info);
+
         // draw search box
         window.draw(text_box);
         window.draw(sf_userin);
 
-        // draw search results
-        window.draw(sf_lookup_result);
-        window.draw(sf_lookup_info);
+        // draw time text
+        window.draw(sf_time);
+
+        // draw information text
+        window.draw(sf_info);
 
         //display all drawn objects
         window.display();

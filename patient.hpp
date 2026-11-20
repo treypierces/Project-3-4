@@ -9,11 +9,15 @@ public:
     std::string lastname;
     std::string birthdate;
     int condition;
+    int id;
 
     patient(std::string firstname,
             std::string lastname,
             std::string birthdate,
-            int condition);
+            int condition,
+            int id);
+
+    std::string print(); 
 };
 
 struct PatientPriority {

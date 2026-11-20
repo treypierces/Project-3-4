@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 #include "patient.hpp"
+#include "doctor.hpp"
+#include "B_Tree.hpp"
 
 patient parse_patient(const std::string& line);
 
@@ -24,5 +26,9 @@ int new_patients(
         std::vector<patient>,
         PatientPriority>& waiting_room,
     std::queue<patient>& incoming_patients);
+
+doctor parse_doctor(const std::string& line);
+
+void load_doctors(B_Tree<doctor>& doctor_tree);
 
 #endif

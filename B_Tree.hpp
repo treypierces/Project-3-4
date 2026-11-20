@@ -2,7 +2,7 @@
 #define B_TREE
 
 /**
- * THIS IS CURRENTLY A BINARY TREE IMPLEMENTATION, NOT A B-TREE
+ * THIS IS CURRENTLY A VECTOR IMPLEMENTATION, NOT A B-TREE
  * 
  * I'm using it for testing
  * 
@@ -10,60 +10,42 @@
  * 
  * Thx 
  */
-
+# include <vector>
 template <typename T>
 class B_Tree
 {
 private:
-    T* root;
+    std::vector<T*> root;
 public:
     
 B_Tree(){
-    root = nullptr;
+    root = std::vector<T*>();
 };
 ~B_Tree(){
-    free(root);
+    for(T* node : root){
+        delete node;
+    }
 };
 
 
 void insert(T* new_node){
-    if(root == nullptr){
-        root = new_node;
-    } else {
-        insert_helper(root, new_node);
-    }
+    root.push_back(new_node);
 }
 
 T* find(int id){
-    T* current = root;
-    while(current != nullptr){
-        if(current->id == id){
-            return current;
-        } else if(id < current->id){
-            current = current->left;
-        } else {
-            current = current->right;
+    for(T* node : root){
+        if(node->id == id){
+            return node;
         }
     }
     return nullptr;
 }
 
-private:
-    void insert_helper(T* current, T* new_node){
-        if(new_node->id < current->id){
-            if(current->left == nullptr){
-                current->left = new_node;
-            } else {
-                insert_helper(current->left, new_node);
-            }
-        } else {
-            if(current->right == nullptr){
-                current->right = new_node;
-            } else {
-                insert_helper(current->right, new_node);
-            }
-        }
-    }
+bool empty(){
+    return root.empty();
+}
+
 };
+
 #endif
 

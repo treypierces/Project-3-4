@@ -11,6 +11,8 @@
 using namespace std;
 
 #include "patient.hpp"
+#include "doctor.hpp"
+#include "B_Tree.hpp"
 
 patient parse_patient(const string& line) {
     istringstream row(line);
@@ -19,12 +21,14 @@ patient parse_patient(const string& line) {
     string firstname;
     string lastname;
     string condition_text;
+    string id;
     string extra_field;
 
     if (!getline(row, birthdate, ',') ||
         !getline(row, firstname, ',') ||
         !getline(row, lastname, ',') ||
         !getline(row, condition_text, ',') ||
+        !getline(row, id, ',') ||
         getline(row, extra_field))
     {
         throw runtime_error("Invalid patient data row");
@@ -43,9 +47,10 @@ patient parse_patient(const string& line) {
         firstname,
         lastname,
         birthdate,
-        condition);
+        condition,
+        stoi(id)
+    );
 }
-
 
 void load_patients(queue<patient>& incoming_patients) {
     ifstream input("data/patient_data.csv");
@@ -76,5 +81,65 @@ int new_patients(
     }
 
     return static_cast<int>(count);
+}
+
+
+doctor parse_doctor(const string& line) {
+    istringstream row(line);
+
+    string birthdate;
+    string firstname;
+    string lastname;
+    string skill_text;
+    string shift_start_text;
+    string shift_end_text;
+    string id_text;
+    string extra_field;
+
+    if (!getline(row, birthdate, ',') ||
+        !getline(row, firstname, ',') ||
+        !getline(row, lastname, ',') ||
+        !getline(row, skill_text, ',') ||
+        !getline(row, shift_start_text, ',') ||
+        !getline(row, shift_end_text, ',') ||
+        !getline(row, id_text, ',') ||
+        getline(row, extra_field))
+    {
+        throw runtime_error("Invalid doctor data row");
+    }
+
+    size_t parsed_characters = 0;
+    int skill = stoi(skill_text, &parsed_characters);
+    int shift_start = stoi(shift_start_text, &parsed_characters);
+    int shift_end = stoi(shift_end_text, &parsed_characters);
+    int id = stoi(id_text, &parsed_characters);
+
+    if (skill_text.find_first_not_of(" \t\r", parsed_characters) !=
+        string::npos)
+    {
+        throw runtime_error("Invalid skill in doctor data row");
+    }
+
+    return doctor(
+        firstname,
+        lastname,
+        birthdate,
+        skill,
+        shift_start,
+        shift_end,
+        id
+    );
+}
+
+void load_doctors(B_Tree<doctor>& doctor_tree) {
+    ifstream input("data/doctor_data.csv");
+
+    string line;
+    getline(input, line);  // skip header
+
+    while (getline(input, line)) {
+        doctor* new_doctor = new doctor(parse_doctor(line));
+        doctor_tree.insert(new_doctor);
+    }
 }
 
