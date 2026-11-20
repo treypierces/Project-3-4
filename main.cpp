@@ -8,6 +8,10 @@
 #include "doctor.hpp"
 #include "B_Tree.hpp"
 
+#include <queue>
+#include "patient.hpp"
+#include "queue.hpp"
+
 //std namespaces
 using namespace std;
 using std::cerr;
@@ -48,6 +52,16 @@ int main()
     doctor_tree.insert(doc1);
     doctor_tree.insert(doc2);
 
+    queue<patient> incoming_patients;
+
+    priority_queue<
+        patient,
+        vector<patient>,
+        PatientPriority> waiting_room;
+    
+    load_patients(incoming_patients);
+
+    
     //720p
     RenderWindow window(VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "DCH Hospital");
     window.setPosition({1200, 50});
@@ -111,6 +125,7 @@ int main()
                 if (play_button.getGlobalBounds().contains(worldPos)) { // play button clicked
                     // FIXME
                     // TIMESTEP
+                    new_patients(waiting_room, incoming_patients);
                     userinput.append("B");
                     sf_userin.setString(userinput);
                 }
