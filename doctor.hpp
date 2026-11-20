@@ -3,6 +3,8 @@
 
 #include <string>
 
+class patient;
+
 class doctor {
 public:
     std::string firstname;
@@ -12,6 +14,8 @@ public:
     int shift_start;
     int shift_end;
     int id;
+
+    patient* currentPatient = nullptr;
 
     doctor(std::string firstname,
             std::string lastname,

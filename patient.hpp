@@ -3,6 +3,8 @@
 
 #include <string>
 
+class doctor;
+
 class patient {
 public:
     std::string firstname;
@@ -10,6 +12,8 @@ public:
     std::string birthdate;
     int condition;
     int id;
+
+    doctor* assignedDoctor = nullptr;
 
     patient(std::string firstname,
             std::string lastname,

@@ -15,6 +15,7 @@ patient::patient(string firstname,
     this->birthdate = birthdate;
     this->condition = condition;
     this->id = id;
+    this->assignedDoctor = nullptr;
 }
 
 std::string patient::print() {

@@ -1,6 +1,7 @@
 #include "doctor.hpp"
 #include <utility>
 #include <string>
+#include "patient.hpp"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ doctor::doctor(string firstname,
     this->shift_start = shift_start;
     this->shift_end = shift_end;
     this->id = id;
+    this->currentPatient = nullptr;
 }
 
 std::string doctor::print() {
