@@ -6,7 +6,8 @@
 #include <format>
 #include <utility>
 #include "doctor.hpp"
-#include "B_Tree.hpp"
+#include "BTree.h"
+#include "BTree.cpp"
 
 #include <queue>
 #include "patient.hpp"
@@ -44,11 +45,10 @@ int main()
     // initialize variables
     string userinput = "";
     bool doctor_lookup = true;
-    int lookup_id = 0;
     int time = 7; // hr of the day
 
-    B_Tree<doctor> doctor_tree;
-    B_Tree<patient> patient_tree;
+    BTree<doctor> doctor_tree{10};
+    BTree<patient> patient_tree{10};
 
     queue<patient> incoming_patients;
     
@@ -199,18 +199,17 @@ int main()
 
 
         // Perform lookup
-        lookup_id = (userinput.empty() ? 0 : std::stoi(userinput));
         if (doctor_lookup) {
-            doctor* found_doctor = doctor_tree.find(lookup_id);
+            std::optional<doctor> found_doctor = doctor_tree.search({"a","b","c"});
             if (found_doctor) {
                 sf_lookup_result.setString("Doctor Found");
-                sf_lookup_info.setString(found_doctor->print());
+                sf_lookup_info.setString(found_doctor.value().print());
             } else {
                 sf_lookup_result.setString("Doctor Not Found");
                 sf_lookup_info.setString("");
             }
         } else { // patient lookup
-            patient* found_patient = patient_tree.find(lookup_id);
+            std::optional<patient> found_patient = patient_tree.search({"a","b","c"});
             if (found_patient) {
                 sf_lookup_result.setString("Patient Found");
                 sf_lookup_info.setString(found_patient->print());

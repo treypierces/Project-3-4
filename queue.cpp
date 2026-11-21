@@ -12,7 +12,8 @@ using namespace std;
 
 #include "patient.hpp"
 #include "doctor.hpp"
-#include "B_Tree.hpp"
+#include "BTree.h"
+#include "BTree.cpp"
 
 patient parse_patient(const string& line) {
     istringstream row(line);
@@ -131,15 +132,15 @@ doctor parse_doctor(const string& line) {
     );
 }
 
-void load_doctors(B_Tree<doctor>& doctor_tree) {
+void load_doctors(BTree<doctor>& doctor_tree) {
     ifstream input("data/doctor_data.csv");
 
     string line;
     getline(input, line);  // skip header
 
     while (getline(input, line)) {
-        doctor* new_doctor = new doctor(parse_doctor(line));
-        doctor_tree.insert(new_doctor);
+        const doctor new_doctor = doctor(parse_doctor(line));
+        doctor_tree.insert({new_doctor.lastname, new_doctor.firstname, new_doctor.birthdate}, new_doctor);
     }
 }
 

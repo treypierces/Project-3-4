@@ -1,6 +1,6 @@
 CXX := g++
-CXXFLAGS := -std=c++20 -Wall -Wextra -g -MMD -MP -fsanitize=address -fno-omit-frame-pointer -O0
-LDFLAGS := -g -fsanitize=address -lsfml-graphics -lsfml-window -lsfml-system
+CXXFLAGS := -std=c++20 -Wall -Wextra -g -MMD -MP -fsanitize=address -fno-omit-frame-pointer -O0 $(shell pkg-config --cflags sfml-graphics)
+LDFLAGS := -g -fsanitize=address $(shell pkg-config --libs sfml-graphics)
 
 SRCS := $(wildcard *.cpp)
 OBJS := $(SRCS:%.cpp=build/%.o)

@@ -6,7 +6,7 @@
 #include <string>
 #include "patient.hpp"
 #include "doctor.hpp"
-#include "B_Tree.hpp"
+#include "BTree.h"
 
 patient parse_patient(const std::string& line);
 
@@ -29,6 +29,6 @@ int new_patients(
 
 doctor parse_doctor(const std::string& line);
 
-void load_doctors(B_Tree<doctor>& doctor_tree);
+void load_doctors(BTree<doctor>& doctor_tree);
 
 #endif

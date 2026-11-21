@@ -180,6 +180,6 @@ std::optional<T> BTree<T>::search(KeyType key) const {
 }
 
 template <typename T>
-std::optional<T> BTree<T>::search(const std::string& last, const std::string& first, const std::chrono::time_point<std::chrono::system_clock> date) {
+std::optional<T> BTree<T>::search(const std::string& last, const std::string& first, const std::string& date) {
     return search({last, first, date});
 }
