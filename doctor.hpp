@@ -25,6 +25,7 @@ public:
             int shift_end,
             int id);
 
+    bool is_available(int time) const;
     std::string print(); 
 };
 

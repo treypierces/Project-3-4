@@ -29,6 +29,9 @@ int new_patients(
 
 doctor parse_doctor(const std::string& line);
 
-void load_doctors(BTree<doctor>& doctor_tree);
+void load_doctors(BTree<doctor>& doctor_tree,    std::priority_queue<doctor, std::vector<doctor>, DoctorPriority>& available_doctors,
+    const int current_time, std::vector<doctor>& off_duty_doctors);
+
+void update_doctor_availability(std::priority_queue<doctor, std::vector<doctor>, DoctorPriority>& available_doctors, std::vector<doctor>& off_duty_doctors, const int current_time);
 
 #endif

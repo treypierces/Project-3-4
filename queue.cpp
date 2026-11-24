@@ -132,7 +132,7 @@ doctor parse_doctor(const string& line) {
     );
 }
 
-void load_doctors(BTree<doctor>& doctor_tree) {
+void load_doctors(BTree<doctor>& doctor_tree, priority_queue<doctor, vector<doctor>, DoctorPriority>& available_doctors, const int current_time, vector<doctor>& off_duty_doctors) {
     ifstream input("data/doctor_data.csv");
 
     string line;
@@ -141,6 +141,26 @@ void load_doctors(BTree<doctor>& doctor_tree) {
     while (getline(input, line)) {
         const doctor new_doctor = doctor(parse_doctor(line));
         doctor_tree.insert({new_doctor.lastname, new_doctor.firstname, new_doctor.birthdate}, new_doctor);
+        if (new_doctor.is_available(current_time)) {
+            available_doctors.push(new_doctor);
+        }
+        else  {
+            off_duty_doctors.push_back(new_doctor);
+        }
+    }
+}
+
+void update_doctor_availability(priority_queue<doctor, vector<doctor>, DoctorPriority>& available_doctors, vector<doctor>& off_duty_doctors, const int current_time) {
+
+    // Move doctors from off-duty to available if they are now available
+    auto it = off_duty_doctors.begin();
+    while (it != off_duty_doctors.end()) {
+        if (it->is_available(current_time)) {
+            available_doctors.push(*it);
+            it = off_duty_doctors.erase(it);
+        } else {
+            ++it;
+        }
     }
 }
 

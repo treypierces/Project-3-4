@@ -53,9 +53,11 @@ int main()
     queue<patient> incoming_patients;
     
     priority_queue< patient,vector<patient>,PatientPriority> waiting_room;
+    priority_queue< doctor,vector<doctor>,DoctorPriority> available_doctors;
+    vector<doctor> off_duty_doctors;
     
     load_patients(incoming_patients);
-    load_doctors(doctor_tree);
+    load_doctors(doctor_tree, available_doctors, time, off_duty_doctors);
     
     //720p
     RenderWindow window(VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "DCH Hospital");
@@ -139,6 +141,7 @@ int main()
                     time++;
                     sf_time.setString("Time: " + std::to_string(time) + ":00");
                     new_patients(waiting_room, incoming_patients);
+                    update_doctor_availability(available_doctors, off_duty_doctors, time);
                 }
             }}
 

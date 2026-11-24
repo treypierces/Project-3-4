@@ -23,9 +23,25 @@ doctor::doctor(string firstname,
     this->currentPatient = nullptr;
 }
 
+bool doctor::is_available(int time) const
+{
+    time = time%24; // Ensure time is within 0-23 range
+    if (time < 0 || time >= 24) {
+        return false;
+    }
+
+    if (shift_start <= shift_end) {
+        return time >= shift_start && time < shift_end;
+    }
+
+    return time >= shift_start || time < shift_end;
+}
+
 std::string doctor::print() {
     return "Doctor Name: " + firstname + " " + lastname + "\nBirthdate: " + birthdate + "\nSkill: " + std::to_string(skill) + "\nShift: " + std::to_string(shift_start) + " - " + std::to_string(shift_end);
 }
+
+
 
 bool DoctorPriority::operator()(
     const doctor& left,
