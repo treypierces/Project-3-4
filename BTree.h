@@ -7,11 +7,9 @@
 #include <utility>
 #include <vector>
 #include <optional>
-#include <utility>
-#include <chrono>
 #include <cstdint>
 
-using KeyType = std::tuple<std::string, std::string, std::string>;
+using KeyType = int;
 
 template <typename T>
 class BTree {
@@ -23,7 +21,6 @@ public:
 
     void insert(KeyType key, T value);
     [[nodiscard]] std::optional<T> search(KeyType key) const;
-    std::optional<T> search(const std::string& last, const std::string& first, const std::string& date);
 
 private:
     struct Node {

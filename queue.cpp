@@ -140,7 +140,7 @@ void load_doctors(BTree<doctor>& doctor_tree, priority_queue<doctor, vector<doct
 
     while (getline(input, line)) {
         const doctor new_doctor = doctor(parse_doctor(line));
-        doctor_tree.insert({new_doctor.lastname, new_doctor.firstname, new_doctor.birthdate}, new_doctor);
+        doctor_tree.insert(new_doctor.id, new_doctor);
         if (new_doctor.is_available(current_time)) {
             available_doctors.push(new_doctor);
         }

@@ -8,6 +8,7 @@
 #include "doctor.hpp"
 #include "BTree.h"
 #include "BTree.cpp"
+#include "graphics.hpp"
 
 #include <queue>
 #include "patient.hpp"
@@ -60,67 +61,12 @@ int main()
     load_doctors(doctor_tree, available_doctors, time, off_duty_doctors);
     
     //720p
-    RenderWindow window(VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "DCH Hospital");
+    RenderWindow window(VideoMode({HospitalUI::WINDOW_WIDTH, HospitalUI::WINDOW_HEIGHT}), "DCH Hospital");
     window.setPosition({1200, 50});
 
-    //load font from a file
-    Font font;
-    if (!font.openFromFile("DejaVuSans.ttf")) {
-        cerr << "Error opening DejaVu Sans font" << endl;
-        return 1;
-    }
+    HospitalUI ui("DejaVuSans.ttf", time);
 
-    // ========================= GRAPHICS =========================
-    //create play button triangle
-    CircleShape play_button_triangle(10, 3);          //radius size, sides
-    play_button_triangle.rotate(degrees(90));  
-    play_button_triangle.setPosition({WINDOW_WIDTH / 2.f + 10.f, WINDOW_HEIGHT * .95f});       //absolute position
-    play_button_triangle.setFillColor(Color(0, 255, 0));
-
-    //create play button
-    RectangleShape play_button({30.f, 30.f});
-    play_button.setPosition({WINDOW_WIDTH / 2.f - 15.f, WINDOW_HEIGHT *.95f - 5.f});
-    play_button.setFillColor(Color::White);
-    play_button.setOutlineColor(Color::Black);
-    play_button.setOutlineThickness(2.f);
-
-    //create user text input box
-    RectangleShape text_box({200.f, 50.f});
-    text_box.setPosition({20, 20});
-    text_box.setFillColor(Color::White);
-    text_box.setOutlineColor(Color::Black);
-    text_box.setOutlineThickness(2.f);  
-
-    // user input text
-    sf::Text sf_userin(font, userinput);
-    sf_userin.setPosition({20.f, 20.f});
-    sf_userin.setFillColor(Color::Black);
-
-    // lookup result text
-    sf::Text sf_lookup_result(font, "");
-    sf_lookup_result.setPosition({20.f, 80.f});
-    sf_lookup_result.setFillColor(Color::Black);
     
-    sf::Text sf_lookup_info(font, "");
-    sf_lookup_info.setPosition({20.f, 110.f});
-    sf_lookup_info.setFillColor(Color::Black);
-
-    RectangleShape look_up_box({500.f, 300.f});
-    look_up_box.setPosition({10.f, 10.f});
-    look_up_box.setFillColor(Color::White);
-    look_up_box.setOutlineColor(Color::Black);
-    look_up_box.setOutlineThickness(2.f);  
-
-    // time text
-    sf::Text sf_time(font, "Time: " + std::to_string(time) + ":00");
-    sf_time.setPosition({WINDOW_WIDTH / 2.f - 75.f, WINDOW_HEIGHT * .90f - 25.f});
-    sf_time.setFillColor(Color::Black);
-
-    // information text
-    sf::Text sf_info(font, "Press 'D' to search for a doctor by ID\nPress 'P' to search for a patient by ID\nClick the play button to simulate time passing",20);
-    sf_info.setPosition({20.f, 350.f});
-    sf_info.setFillColor(Color::Black);
-
     // ========================= EVENT LOOP =========================
     while (window.isOpen())
     {
@@ -135,11 +81,11 @@ int main()
                 Vector2i pixelPos(mouseClick->position.x, mouseClick->position.y);
                 Vector2f worldPos = window.mapPixelToCoords(pixelPos);
             
-                if (play_button.getGlobalBounds().contains(worldPos)) { // play button clicked
+                if (ui.playButtonClicked(worldPos)) { // play button clicked
                     // FIXME
                     // TIMESTEP
                     time++;
-                    sf_time.setString("Time: " + std::to_string(time) + ":00");
+                    ui.setTime(time);
                     new_patients(waiting_room, incoming_patients);
                     update_doctor_availability(available_doctors, off_duty_doctors, time);
                 }
@@ -196,55 +142,65 @@ int main()
                     userinput = userinput.substr(0, 3);
                 }
 
-                sf_userin.setString(userinput); 
+                ui.setUserInput(userinput);
             }
         }
 
 
         // Perform lookup
         if (doctor_lookup) {
-            std::optional<doctor> found_doctor = doctor_tree.search({"a","b","c"});
+            std::optional<doctor> found_doctor;
+            if (!userinput.empty()) {
+                found_doctor = off_duty_doctors[1];
+            }
             if (found_doctor) {
-                sf_lookup_result.setString("Doctor Found");
-                sf_lookup_info.setString(found_doctor.value().print());
+                //sf_lookup_result.setString("Doctor Found");
+                //ui.setLookupResult(d ? "Doctor Found" : "Doctor Not Found");
+                //ui.setLookupInfo(d ? d->print() : "");
             } else {
-                sf_lookup_result.setString("Doctor Not Found");
-                sf_lookup_info.setString("");
+                //sf_lookup_result.setString("Doctor Not Found");
+                //ui.setLookupResult(p ? "Patient Found" : "Patient Not Found");
+                //ui.setLookupInfo(p ? p->print() : "");
             }
         } else { // patient lookup
-            std::optional<patient> found_patient = patient_tree.search({"a","b","c"});
+            std::optional<patient> found_patient;
+            if (!userinput.empty()) {
+                found_patient = patient_tree.search(std::stoi(userinput));
+            }
             if (found_patient) {
-                sf_lookup_result.setString("Patient Found");
-                sf_lookup_info.setString(found_patient->print());
+                //sf_lookup_result.setString("Patient Found");
+                //ui.setLookupResult(p ? "Patient Found" : "Patient Not Found");
+                //ui.setLookupInfo(p ? p->print() : "");
             } else {
-                sf_lookup_result.setString("Patient Not Found");
-                sf_lookup_info.setString("");
+                //sf_lookup_result.setString("Patient Not Found");
+                //sf_lookup_info.setString("");
             }
         }
 
-        //reset the window
-        window.clear(Color::White);
+        // //reset the window
+        // window.clear(Color::White);
 
-        //draw buttons
-        window.draw(play_button);
-        window.draw(play_button_triangle);
+        // //draw buttons
+        // window.draw(play_button);
+        // window.draw(play_button_triangle);
 
-        // draw search results
-        window.draw(look_up_box);
-        window.draw(sf_lookup_result);
-        window.draw(sf_lookup_info);
+        // // draw search results
+        // window.draw(look_up_box);
+        // window.draw(sf_lookup_result);
+        // window.draw(sf_lookup_info);
 
-        // draw search box
-        window.draw(text_box);
-        window.draw(sf_userin);
+        // // draw search box
+        // window.draw(text_box);
+        // window.draw(sf_userin);
 
-        // draw time text
-        window.draw(sf_time);
+        // // draw time text
+        // window.draw(sf_time);
 
-        // draw information text
-        window.draw(sf_info);
+        // // draw information text
+        // window.draw(sf_info);
 
-        //display all drawn objects
-        window.display();
+        // //display all drawn objects
+        // window.display();
+        ui.draw(window);
     }
 }

@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 #include <cstdint>
+#include <stdexcept>
 
 template <typename T>
 BTree<T>::BTree(const uint32_t degree) : degree(std::max(degree, static_cast<uint32_t>(2))) {
@@ -71,7 +72,7 @@ BTree<T>::Node* BTree<T>::Node::split() {
         child->parent = newNode;
     }
 
-    const uint32_t newIndex{newParent->stealKey(this, middle)}; // take this median key
+    newParent->stealKey(this, middle); // take this median key
 
     if (parent != newParent) {
         parent = newParent; // make this child of the new parent
@@ -79,7 +80,12 @@ BTree<T>::Node* BTree<T>::Node::split() {
         parent->children.push_back(this); // children are empty, pushing this then newNode should have correct ordering
         parent->children.push_back(newNode);
     } else {
-        parent->children.insert(parent->children.begin() + newIndex + 1, newNode);
+        const auto childPosition{std::find(parent->children.begin(), parent->children.end(), this)};
+        if (childPosition == parent->children.end()) {
+            throw std::logic_error("B-tree node is missing from its parent");
+        }
+
+        parent->children.insert(childPosition + 1, newNode);
     }
 
     newParent->leaf = false;
@@ -147,7 +153,7 @@ std::pair<typename BTree<T>::Node*, uint32_t> BTree<T>::Node::insertKey(KeyType 
 }
 
 template <typename T>
-void BTree<T>::insert(KeyType key, const T value) {
+void BTree<T>::insert(KeyType key, T value) {
     root->insertKey(key, value);
 
     if (root->parent != nullptr) {
@@ -177,9 +183,4 @@ std::optional<T> BTree<T>::search(KeyType key) const {
     }
 
     return std::nullopt;
-}
-
-template <typename T>
-std::optional<T> BTree<T>::search(const std::string& last, const std::string& first, const std::string& date) {
-    return search({last, first, date});
 }

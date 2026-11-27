@@ -1,6 +1,6 @@
 CXX := g++
 CXXFLAGS := -std=c++20 -Wall -Wextra -g -MMD -MP -fsanitize=address -fno-omit-frame-pointer -O0 $(shell pkg-config --cflags sfml-graphics)
-LDFLAGS := -g -fsanitize=address $(shell pkg-config --libs sfml-graphics)
+LDFLAGS := -g -fsanitize=address $(shell pkg-config --libs sfml-graphics)	
 
 SRCS := $(wildcard *.cpp)
 OBJS := $(SRCS:%.cpp=build/%.o)
@@ -9,7 +9,7 @@ TARGET := ./bin/main
 all: $(TARGET)
 
 $(TARGET): $(OBJS) | bin
-	$(CXX) $(LDFLAGS) $^ -o $@
+	$(CXX) $^ $(LDFLAGS) -o $@
 
 build/%.o: %.cpp | build
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -18,7 +18,7 @@ build bin:
 	mkdir -p $@
 
 run: $(TARGET)
-	./$(TARGET) $(ARGS)
+	ASAN_OPTIONS=detect_leaks=0 ./$(TARGET) $(ARGS)
 
 clean:
 	rm -rf ./build/ ./bin/
