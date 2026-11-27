@@ -5,11 +5,11 @@
 #include <string>
 #include <format>
 #include <utility>
+
 #include "doctor.hpp"
 #include "BTree.h"
 #include "BTree.cpp"
 #include "graphics.hpp"
-
 #include <queue>
 #include "patient.hpp"
 #include "queue.hpp"
@@ -46,6 +46,7 @@ int main()
     // initialize variables
     string userinput = "";
     bool doctor_lookup = true;
+    bool user_in_changed = true; // see if user input has changed to see if lookup needs to be performed
     int time = 7; // hr of the day
 
     BTree<doctor> doctor_tree{10};
@@ -72,8 +73,10 @@ int main()
     {
         while (const optional event = window.pollEvent())
         {
-            if (event->is<Event::Closed>())
+            if (event->is<Event::Closed>()){
                 window.close();
+                break;
+            }
             
             //next iteration of insertion sort -> click the play button
             if (const auto* mouseClick = event->getIf<Event::MouseButtonPressed>()){ // mouse clicked
@@ -87,120 +90,61 @@ int main()
                     time++;
                     ui.setTime(time);
                     new_patients(waiting_room, incoming_patients);
+
                     update_doctor_availability(available_doctors, off_duty_doctors, time);
+
+                    patient a = patient("","","",0,0);
+                    while (waiting_room.size() > 0) {
+                        a = waiting_room.top();
+                        cout << a.print() << "\nID: " << a.id << endl;
+                        patient_tree.insert(a.id, a);
+                        waiting_room.pop();
+
+                    }
                 }
             }}
 
             if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-                switch(keyPressed->code){
-                    case sf::Keyboard::Key::Num1:
-                        userinput.append("1");
-                        break;
-                    case sf::Keyboard::Key::Num2:
-                        userinput.append("2");
-                        break;
-                    case sf::Keyboard::Key::Num3:
-                        userinput.append("3");
-                        break;
-                    case sf::Keyboard::Key::Num4:
-                        userinput.append("4");
-                        break;
-                    case sf::Keyboard::Key::Num5:
-                        userinput.append("5");
-                        break;
-                    case sf::Keyboard::Key::Num6:
-                        userinput.append("6");
-                        break;
-                    case sf::Keyboard::Key::Num7:
-                        userinput.append("7");
-                        break;
-                    case sf::Keyboard::Key::Num8:
-                        userinput.append("8");
-                        break;
-                    case sf::Keyboard::Key::Num9:
-                        userinput.append("9");
-                        break;
-                    case sf::Keyboard::Key::Num0:
-                        userinput.append("0");
-                        break;
-                    case sf::Keyboard::Key::Backspace:
-                        if (!userinput.empty()) {
-                            userinput.pop_back();
-                        }
-                        break;
-                    case sf::Keyboard::Key::D:
-                        doctor_lookup = true;
-                        break;
-                    case sf::Keyboard::Key::P:
-                        doctor_lookup = false;
-                        break;
-                    default:
-                        break;                        
-                }
-
-                if(userinput.length() > 3){
-                    userinput = userinput.substr(0, 3);
-                }
+                ui.buttonTyped(keyPressed->code, userinput, doctor_lookup);
 
                 ui.setUserInput(userinput);
+                user_in_changed = true;
             }
         }
 
 
         // Perform lookup
-        if (doctor_lookup) {
-            std::optional<doctor> found_doctor;
-            if (!userinput.empty()) {
-                found_doctor = off_duty_doctors[1];
+        if(user_in_changed){
+            if (doctor_lookup) {
+                std::optional<doctor> found_doctor;
+                if (!userinput.empty()) {
+                    found_doctor = doctor_tree.search(std::stoi(userinput));
+                }
+                if (found_doctor) {
+                    ui.setLookupResult(found_doctor ? "Doctor Found" : "Doctor Not Found");
+                    ui.setLookupInfo(found_doctor ? found_doctor->print() : "");
+                } else {
+                    ui.setLookupResult("Doctor Not Found");
+                    ui.setLookupInfo("");
+                }
+            } else { // patient lookup
+                std::optional<patient> found_patient;
+                if (!userinput.empty()) {
+                    found_patient = patient_tree.search(std::stoi(userinput));
+                }
+                if (found_patient) {
+                    ui.setLookupResult(found_patient ? "Patient Found" : "Patient Not Found");
+                    ui.setLookupInfo(found_patient ? found_patient->print() : "");
+                } else {
+                    ui.setLookupResult("Patient Not Found");
+                    ui.setLookupInfo("");
+                }
             }
-            if (found_doctor) {
-                //sf_lookup_result.setString("Doctor Found");
-                //ui.setLookupResult(d ? "Doctor Found" : "Doctor Not Found");
-                //ui.setLookupInfo(d ? d->print() : "");
-            } else {
-                //sf_lookup_result.setString("Doctor Not Found");
-                //ui.setLookupResult(p ? "Patient Found" : "Patient Not Found");
-                //ui.setLookupInfo(p ? p->print() : "");
-            }
-        } else { // patient lookup
-            std::optional<patient> found_patient;
-            if (!userinput.empty()) {
-                found_patient = patient_tree.search(std::stoi(userinput));
-            }
-            if (found_patient) {
-                //sf_lookup_result.setString("Patient Found");
-                //ui.setLookupResult(p ? "Patient Found" : "Patient Not Found");
-                //ui.setLookupInfo(p ? p->print() : "");
-            } else {
-                //sf_lookup_result.setString("Patient Not Found");
-                //sf_lookup_info.setString("");
-            }
+
+            user_in_changed = false;
         }
 
-        // //reset the window
-        // window.clear(Color::White);
-
-        // //draw buttons
-        // window.draw(play_button);
-        // window.draw(play_button_triangle);
-
-        // // draw search results
-        // window.draw(look_up_box);
-        // window.draw(sf_lookup_result);
-        // window.draw(sf_lookup_info);
-
-        // // draw search box
-        // window.draw(text_box);
-        // window.draw(sf_userin);
-
-        // // draw time text
-        // window.draw(sf_time);
-
-        // // draw information text
-        // window.draw(sf_info);
-
-        // //display all drawn objects
-        // window.display();
+        // draw the UI
         ui.draw(window);
     }
 }

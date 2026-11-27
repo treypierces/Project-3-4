@@ -112,6 +112,59 @@ public:
         window.display();
     }
 
+    void buttonTyped(sf::Keyboard::Key key, std::string& userinput, bool& doctor_lookup)
+    {
+        switch(key){
+            case sf::Keyboard::Key::Num1:
+                userinput.append("1");
+                break;
+            case sf::Keyboard::Key::Num2:
+                userinput.append("2");
+                break;
+            case sf::Keyboard::Key::Num3:
+                userinput.append("3");
+                break;
+            case sf::Keyboard::Key::Num4:
+                userinput.append("4");
+                break;
+            case sf::Keyboard::Key::Num5:
+                userinput.append("5");
+                break;
+            case sf::Keyboard::Key::Num6:
+                userinput.append("6");
+                break;
+            case sf::Keyboard::Key::Num7:
+                userinput.append("7");
+                break;
+            case sf::Keyboard::Key::Num8:
+                userinput.append("8");
+                break;
+            case sf::Keyboard::Key::Num9:
+                userinput.append("9");
+                break;
+            case sf::Keyboard::Key::Num0:
+                userinput.append("0");  
+                break;
+            case sf::Keyboard::Key::Backspace:
+                if (!userinput.empty()) {
+                    userinput.pop_back();
+                }
+                break;
+            case sf::Keyboard::Key::D:
+                doctor_lookup = true;
+                break;
+            case sf::Keyboard::Key::P:
+                doctor_lookup = false;
+                break;
+            default:
+                break;   
+            }
+
+            if(userinput.length() > 3){
+                userinput = userinput.substr(0, 3);
+            }
+    }
+
 private:
     static sf::Font loadFont(const std::string& path)
     {
