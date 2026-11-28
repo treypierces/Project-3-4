@@ -21,5 +21,3 @@ SFML doesn't bundle a font; the visualizer loads the system's DejaVu Sans font
 from `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf`. On Windows, run it from
 WSL with WSLg enabled (available in current Windows 11 WSL installations) so
 the SFML window can be displayed.
-
-## Division of labor
