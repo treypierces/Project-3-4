@@ -83,6 +83,13 @@ int main()
                 break;
             }
             
+            if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+                ui.buttonTyped(keyPressed->code, userinput, doctor_lookup);
+
+                ui.setUserInput(userinput);
+                user_in_changed = true;
+            }
+
             //next iteration of insertion sort -> click the play button
             if (const auto* mouseClick = event->getIf<Event::MouseButtonPressed>()){ // mouse clicked
             if (mouseClick->button == sf::Mouse::Button::Left){
@@ -94,6 +101,7 @@ int main()
                     ui.setTooManyPatientsMode(too_many_patients_mode);
                 } else if (ui.playButtonClicked(worldPos)) { // play button clicked
                     TimestepEvents events;
+                    user_in_changed = true;
 
                     // TIMESTEP
                     time = (time + 1) % 24;
@@ -183,16 +191,10 @@ int main()
                     ui.setTimestepEventText(5, formatIds(events.discharged_patient_ids));
                     ui.setTimestepEventText(6, formatIds(events.critical_patient_ids));
                     ui.setTimestepEventText(7, formatIds(events.deceased_patient_ids));
-
                 }
             }}
 
-            if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-                ui.buttonTyped(keyPressed->code, userinput, doctor_lookup);
-
-                ui.setUserInput(userinput);
-                user_in_changed = true;
-            }
+            
         }
 
 
@@ -219,7 +221,6 @@ int main()
                     ui.setLookupResult(found_patient ? "Patient Found" : "Patient Not Found");
                     ui.setLookupInfo(found_patient ? found_patient->print() : "");
                 } else { 
-                   
                     ui.setLookupResult("Patient Not Found");
                     ui.setLookupInfo("");
                 }
