@@ -1,0 +1,51 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>340</x><y>120</y><w>210</w><h>190</h></coordinates><panel_attributes>**Doctor**
+--
++ firstname
++ lastname
++ birthdate
++ skill
++ shift_start
++ shift_end
++ id
++ patID
+--
++ is_available(in time:int): int
++ print(): string</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>40</x><y>150</y><w>210</w><h>150</h></coordinates><panel_attributes>**Patient**
+--
++ firstname
++ lastname
++ birthdate
++ condition
++ id
++ docID
+--
++ print(): string</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>710</x><y>120</y><w>210</w><h>110</h></coordinates><panel_attributes>**BTree**
+--
+- degree
+- root
+--
++ insert(in key:key, value:int): void 
++ search(in key:key): typenameT
++ forEach(in action:function): void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>660</x><y>410</y><w>290</w><h>230</h></coordinates><panel_attributes>**Node**
+--
+~ degree
+~ numKeys
+~ keys[]
+~ children[]
+~ parent
+~ leaf
+--
+~ lowerBound(in key:Key): int 
+~ search(in key:Key): &lt;Node, int&gt;
+~ forEach(in action:function): void 
+~ split(): Node* 
+~ stealKey(in node:Node*, index:int): int 
+~ insertKey(in key:Key, value:T): &lt;Node, int&gt; 
+~ insertKeyAt(in key:Key, value:T, index:int): void 
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>170</x><y>540</y><w>210</w><h>60</h></coordinates><panel_attributes>**Key**
+--
+~ key
+~ value
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>240</x><y>200</y><w>120</w><h>40</h></coordinates><panel_attributes></panel_attributes><additional_attributes>10;20;100;20</additional_attributes></element><element><id>Relation</id><coordinates><x>130</x><y>290</y><w>160</w><h>270</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>140;250;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>260</x><y>300</y><w>200</w><h>260</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>180;10;10;240</additional_attributes></element><element><id>Relation</id><coordinates><x>370</x><y>520</y><w>310</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>290;10;10;50</additional_attributes></element><element><id>Relation</id><coordinates><x>800</x><y>220</y><w>30</w><h>210</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;190</additional_attributes></element></diagram>
