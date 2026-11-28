@@ -12,6 +12,8 @@ When a patient gets all better (`condition <= 0`), their doctor is moved back in
 
 If the hospital runs out of doctors, patients will stay in the `waiting_room` but their `condition` will get 1 higher, indicating that it's getting worse. Patients in the `waiting_room` with `condition` levels of 10 or 11 are considered "in critical condition," and if they make it to level 12 they die.
 
+An example would be a patient coming in with a level 10 condition. They first will be put in the waiting room with top priority. They'll be matched with the best doctor available and be placed in the patient B-tree to receive treatment. After several timesteps, depending on the doctor's skill, the patient's condition will go down to 0 or below, and the patient will be discharged. The patient's doctor will then find a new patient to work on.
+
 The UML class diagram for this prohect is in `Proj3_UML_Diagram.png` in this repository.
 
 ### GUI
