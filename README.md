@@ -2,6 +2,8 @@
 
 Code for the hospital simulation project in CS 201.
 
+Use `make run` to run the program
+
 # Read report.md for our report
 
 ## Building and running the SFML visualizer
