@@ -1,7 +1,7 @@
 #include "doctor.hpp"
+#include "patient.hpp"
 #include <utility>
 #include <string>
-#include "patient.hpp"
 
 using namespace std;
 
@@ -20,7 +20,7 @@ doctor::doctor(string firstname,
     this->shift_start = shift_start;
     this->shift_end = shift_end;
     this->id = id;
-    this->currentPatient = nullptr;
+    this->patID = -1; // Initialize patID to -1 to indicate no patient assigned
 }
 
 bool doctor::is_available(int time) const
@@ -38,7 +38,11 @@ bool doctor::is_available(int time) const
 }
 
 std::string doctor::print() {
-    return "Doctor Name: " + firstname + " " + lastname + "\nBirthdate: " + birthdate + "\nSkill: " + std::to_string(skill) + "\nShift: " + std::to_string(shift_start) + " - " + std::to_string(shift_end);
+    return "Doctor Name: " + firstname + " " + lastname + 
+    "\nBirthdate: " + birthdate + 
+    "\nSkill: " + std::to_string(skill) + 
+    "\nShift: " + std::to_string(shift_start) + " - " + std::to_string(shift_end) +
+    "\nPatient ID: " + (patID != -1 ? std::to_string(patID) : "None");
 }
 
 

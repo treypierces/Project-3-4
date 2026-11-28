@@ -8,6 +8,7 @@
 #include <vector>
 #include <optional>
 #include <cstdint>
+#include <functional>
 
 using KeyType = int;
 
@@ -21,6 +22,7 @@ public:
 
     void insert(KeyType key, T value);
     [[nodiscard]] std::optional<T> search(KeyType key) const;
+    void forEach(const std::function<void(T&)>& action);
 
 private:
     struct Node {
@@ -46,6 +48,7 @@ private:
 
         [[nodiscard]] uint32_t lowerBound(KeyType key) const;
         [[nodiscard]] std::optional<std::pair<Node*, uint32_t>> search(KeyType key);
+        void forEach(const std::function<void(T&)>& action);
         Node* split();
         uint32_t stealKey(Node* node, uint32_t index);
         std::pair<Node*, uint32_t> insertKey(KeyType key, T& value);

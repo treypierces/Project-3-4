@@ -14,8 +14,7 @@ public:
     int shift_start;
     int shift_end;
     int id;
-
-    patient* currentPatient = nullptr;
+    int patID;
 
     doctor(std::string firstname,
             std::string lastname,

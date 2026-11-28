@@ -184,3 +184,22 @@ std::optional<T> BTree<T>::search(KeyType key) const {
 
     return std::nullopt;
 }
+
+template <typename T>
+void BTree<T>::forEach(const std::function<void(T&)>& action) {
+    root->forEach(action);
+}
+
+template <typename T>
+void BTree<T>::Node::forEach(const std::function<void(T&)>& action) {
+    for (uint32_t i = 0; i < numKeys; ++i) {
+        if (!leaf) {
+            children[i]->forEach(action);
+        }
+        action(keys[i].value);
+    }
+
+    if (!leaf) {
+        children[numKeys]->forEach(action);
+    }
+}

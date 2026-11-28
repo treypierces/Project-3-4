@@ -1,4 +1,5 @@
 #include "patient.hpp"
+#include "doctor.hpp"
 #include <utility>
 #include <string>
 
@@ -15,11 +16,14 @@ patient::patient(string firstname,
     this->birthdate = birthdate;
     this->condition = condition;
     this->id = id;
-    this->assignedDoctor = nullptr;
+    this->docID = -1; // Initialize docID to -1 to indicate no doctor assigned
 }
 
 std::string patient::print() {
-    return "Patient Name: " + firstname + " " + lastname + "\nBirthdate: " + birthdate + "\nCondition: " + std::to_string(condition);
+    return "Patient Name: " + firstname + " " + lastname + 
+    "\nBirthdate: " + birthdate + 
+    "\nCondition: " + std::to_string(condition) +
+    "\nDoctor ID: " + (docID != -1 ? std::to_string(docID) : "None");
 }
 
 bool PatientPriority::operator()(

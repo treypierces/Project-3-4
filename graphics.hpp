@@ -2,6 +2,8 @@
 #define GRAPHICS_HPP
 
 #include <SFML/Graphics.hpp>
+#include <array>
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 
@@ -28,7 +30,16 @@ public:
                   "Press 'D' to search for a doctor by ID\n"
                   "Press 'P' to search for a patient by ID\n"
                   "Click the play button to simulate time passing",
-                  20)
+                  20),
+          event_texts{
+              sf::Text(font, "", 12),
+              sf::Text(font, "", 12),
+              sf::Text(font, "", 12),
+              sf::Text(font, "", 12),
+              sf::Text(font, "", 12),
+              sf::Text(font, "", 12),
+              sf::Text(font, "", 12),
+              sf::Text(font, "", 12)}
     {
         // play button triangle
         play_button_triangle.rotate(sf::degrees(90));
@@ -69,6 +80,19 @@ public:
 
         sf_info.setPosition({20.f, 350.f});
         sf_info.setFillColor(sf::Color::Black);
+
+        for (std::size_t i = 0; i < event_boxes.size(); ++i) {
+            const float x = 620.f + static_cast<float>(i % 2) * 320.f;
+            const float y = 12.f + static_cast<float>(i / 2) * 155.f;
+            event_boxes[i].setSize({306.f, 145.f});
+            event_boxes[i].setPosition({x, y});
+            event_boxes[i].setFillColor(sf::Color::White);
+            event_boxes[i].setOutlineColor(sf::Color::Black);
+            event_boxes[i].setOutlineThickness(1.f);
+            event_texts[i].setPosition({x + 8.f, y + 6.f});
+            event_texts[i].setFillColor(sf::Color::Black);
+            setTimestepEventText(i, "None");
+        }
     }
 
     // sf::Text keeps a reference to the font, so this object must not be copied or moved.
@@ -80,6 +104,22 @@ public:
     void setUserInput(const std::string& s)      { sf_userin.setString(s); }
     void setLookupResult(const std::string& s)   { sf_lookup_result.setString(s); }
     void setLookupInfo(const std::string& s)     { sf_lookup_info.setString(s); }
+    void setTimestepEventText(std::size_t index, const std::string& text)
+    {
+        static constexpr std::array<const char*, 8> titles{
+            "New patients",
+            "Doctors starting shifts",
+            "Doctors ending shifts",
+            "Patients waiting after assignments",
+            "Doctor-patient assignments",
+            "Healed and discharged",
+            "Critical patients",
+            "Patients who died"};
+        if (index >= event_texts.size()) {
+            throw std::out_of_range("Invalid timestep event panel index");
+        }
+        event_texts[index].setString(std::string(titles[index]) + ":\n" + wrapText(text));
+    }
 
     // ---------- input helpers ----------
     bool playButtonClicked(sf::Vector2f worldPos) const
@@ -108,6 +148,11 @@ public:
         // time + info text
         window.draw(sf_time);
         window.draw(sf_info);
+
+        for (std::size_t i = 0; i < event_boxes.size(); ++i) {
+            window.draw(event_boxes[i]);
+            window.draw(event_texts[i]);
+        }
 
         window.display();
     }
@@ -166,6 +211,48 @@ public:
     }
 
 private:
+    static std::string wrapText(const std::string& text)
+    {
+        constexpr std::size_t maxLineLength = 39;
+        std::string wrapped;
+        std::string line;
+        std::size_t wordStart = 0;
+        while (wordStart < text.size()) {
+            while (wordStart < text.size() && text[wordStart] == ' ') {
+                ++wordStart;
+            }
+            if (wordStart == text.size()) {
+                break;
+            }
+            const std::size_t wordEnd = text.find(' ', wordStart);
+            const std::string word = text.substr(
+                wordStart,
+                wordEnd == std::string::npos ? std::string::npos : wordEnd - wordStart);
+            if (!line.empty() && line.size() + 1 + word.size() > maxLineLength) {
+                if (!wrapped.empty()) {
+                    wrapped += '\n';
+                }
+                wrapped += line;
+                line.clear();
+            }
+            if (!line.empty()) {
+                line += ' ';
+            }
+            line += word;
+            if (wordEnd == std::string::npos) {
+                break;
+            }
+            wordStart = wordEnd + 1;
+        }
+        if (!line.empty()) {
+            if (!wrapped.empty()) {
+                wrapped += '\n';
+            }
+            wrapped += line;
+        }
+        return wrapped;
+    }
+
     static sf::Font loadFont(const std::string& path)
     {
         sf::Font f;
@@ -187,6 +274,8 @@ private:
     sf::Text sf_lookup_info;
     sf::Text sf_time;
     sf::Text sf_info;
+    std::array<sf::RectangleShape, 8> event_boxes;
+    std::array<sf::Text, 8> event_texts;
 };
 
 #endif // GRAPHICS_HPP
