@@ -47,6 +47,7 @@ int main()
     string userinput = "";
     bool doctor_lookup = true;
     bool user_in_changed = true; // see if user input has changed to see if lookup needs to be performed
+    bool too_many_patients_mode = false;
     int time = 7; // hr of the day
 
     BTree<doctor> doctor_tree{10};
@@ -88,14 +89,21 @@ int main()
                 Vector2i pixelPos(mouseClick->position.x, mouseClick->position.y);
                 Vector2f worldPos = window.mapPixelToCoords(pixelPos);
             
-                if (ui.playButtonClicked(worldPos)) { // play button clicked
+                if (ui.tooManyPatientsButtonClicked(worldPos)) {
+                    too_many_patients_mode = !too_many_patients_mode;
+                    ui.setTooManyPatientsMode(too_many_patients_mode);
+                } else if (ui.playButtonClicked(worldPos)) { // play button clicked
                     TimestepEvents events;
 
                     // TIMESTEP
                     time = (time + 1) % 24;
                     ui.setTime(time);
 
-                    new_patients(waiting_room, incoming_patients, events.new_patient_ids);
+                    new_patients(
+                        waiting_room,
+                        incoming_patients,
+                        events.new_patient_ids,
+                        too_many_patients_mode);
                     update_doctor_availability(available_doctors, off_duty_doctors, doctor_tree, waiting_room, patient_tree, time, events);
 
                     patient newPat = patient("","","",0,0); // assign doctors to patients
@@ -118,7 +126,7 @@ int main()
                         events.waiting_patient_ids.push_back(newPat.id);
 
                         newPat.condition += 1;
-                        if(newPat.condition == 11){
+                        if(newPat.condition == 10 || newPat.condition == 11){
                             events.critical_patient_ids.push_back(newPat.id);
                             //cout << "Patient " << newPat.id << " has worsened to critical condition." << endl;
                         }
@@ -210,7 +218,8 @@ int main()
                 if (found_patient) {
                     ui.setLookupResult(found_patient ? "Patient Found" : "Patient Not Found");
                     ui.setLookupInfo(found_patient ? found_patient->print() : "");
-                } else {
+                } else { 
+                   
                     ui.setLookupResult("Patient Not Found");
                     ui.setLookupInfo("");
                 }

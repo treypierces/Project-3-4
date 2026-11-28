@@ -20,16 +20,20 @@ public:
         : font(loadFont(fontPath)),
           play_button_triangle(10.f, 3),
           play_button({30.f, 30.f}),
+          too_many_patients_button({250.f, 46.f}),
           text_box({200.f, 50.f}),
           look_up_box({500.f, 300.f}),
           sf_userin(font, ""),
           sf_lookup_result(font, ""),
           sf_lookup_info(font, ""),
           sf_time(font, ""),
+          too_many_patients_label(font, "", 16),
           sf_info(font,
+                  "Type a number to search for that ID\n"
                   "Press 'D' to search for a doctor by ID\n"
-                  "Press 'P' to search for a patient by ID\n"
-                  "Click the play button to simulate time passing",
+                  "Press 'P' to search for a patient by ID*\n"
+                  "Click the play button to simulate time passing\n"
+                  "*Note that patients can only be searched for after \n    assignment to a doctor",
                   20),
           event_texts{
               sf::Text(font, "", 12),
@@ -51,6 +55,14 @@ public:
         play_button.setFillColor(sf::Color::White);
         play_button.setOutlineColor(sf::Color::Black);
         play_button.setOutlineThickness(2.f);
+
+        too_many_patients_button.setPosition({20.f, WINDOW_HEIGHT - 66.f});
+        too_many_patients_button.setFillColor(sf::Color(235, 235, 235));
+        too_many_patients_button.setOutlineColor(sf::Color::Black);
+        too_many_patients_button.setOutlineThickness(2.f);
+        too_many_patients_label.setPosition({28.f, WINDOW_HEIGHT - 60.f});
+        too_many_patients_label.setFillColor(sf::Color::Black);
+        setTooManyPatientsMode(false);
 
         // user text input box
         text_box.setPosition({20.f, 20.f});
@@ -104,6 +116,14 @@ public:
     void setUserInput(const std::string& s)      { sf_userin.setString(s); }
     void setLookupResult(const std::string& s)   { sf_lookup_result.setString(s); }
     void setLookupInfo(const std::string& s)     { sf_lookup_info.setString(s); }
+    void setTooManyPatientsMode(bool enabled)
+    {
+        too_many_patients_label.setString(
+            std::string("Too many patients mode: ") + (enabled ? "ON" : "OFF"));
+        too_many_patients_button.setFillColor(
+            enabled ? sf::Color(170, 235, 170) : sf::Color(235, 235, 235));
+    }
+
     void setTimestepEventText(std::size_t index, const std::string& text)
     {
         static constexpr std::array<const char*, 8> titles{
@@ -127,6 +147,11 @@ public:
         return play_button.getGlobalBounds().contains(worldPos);
     }
 
+    bool tooManyPatientsButtonClicked(sf::Vector2f worldPos) const
+    {
+        return too_many_patients_button.getGlobalBounds().contains(worldPos);
+    }
+
     // ---------- drawing ----------
     void draw(sf::RenderWindow& window)
     {
@@ -135,6 +160,8 @@ public:
         // buttons
         window.draw(play_button);
         window.draw(play_button_triangle);
+        window.draw(too_many_patients_button);
+        window.draw(too_many_patients_label);
 
         // search results
         window.draw(look_up_box);
@@ -266,6 +293,7 @@ private:
 
     sf::CircleShape    play_button_triangle;
     sf::RectangleShape play_button;
+    sf::RectangleShape too_many_patients_button;
     sf::RectangleShape text_box;
     sf::RectangleShape look_up_box;
 
@@ -273,6 +301,7 @@ private:
     sf::Text sf_lookup_result;
     sf::Text sf_lookup_info;
     sf::Text sf_time;
+    sf::Text too_many_patients_label;
     sf::Text sf_info;
     std::array<sf::RectangleShape, 8> event_boxes;
     std::array<sf::Text, 8> event_texts;

@@ -68,15 +68,19 @@ void load_patients(queue<patient>& incoming_patients) {
 int new_patients(
     priority_queue<patient, vector<patient>, PatientPriority>& waiting_room,
     queue<patient>& incoming_patients,
-    vector<int>& new_patient_ids)
+    vector<int>& new_patient_ids,
+    const bool too_many_patients_mode)
 {
     static mt19937 rng(random_device{}());
     if (incoming_patients.empty()) {
         return 0;
     }
-    size_t max_count = min<size_t>(5, incoming_patients.size());
-    size_t count =
-        uniform_int_distribution<size_t>(1, max_count)(rng);
+    const size_t max_count = min(
+        static_cast<size_t>(too_many_patients_mode ? 20 : 5),
+        incoming_patients.size());
+    const size_t count = too_many_patients_mode
+        ? max_count
+        : uniform_int_distribution<size_t>(1, max_count)(rng);
 
     for (size_t i = 0; i < count; ++i) {
         new_patient_ids.push_back(incoming_patients.front().id);

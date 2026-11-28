@@ -38,7 +38,8 @@ int new_patients(
         std::vector<patient>,
         PatientPriority>& waiting_room,
     std::queue<patient>& incoming_patients,
-    std::vector<int>& new_patient_ids);
+    std::vector<int>& new_patient_ids,
+    bool too_many_patients_mode);
 
 doctor parse_doctor(const std::string& line);
 
