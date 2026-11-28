@@ -67,7 +67,7 @@ int main()
     initialize_doctor_availability(available_doctors, off_duty_doctors, time);
     
     //720p
-    RenderWindow window(VideoMode({HospitalUI::WINDOW_WIDTH, HospitalUI::WINDOW_HEIGHT}), "DCH Hospital");
+    RenderWindow window(VideoMode({HospitalUI::WINDOW_WIDTH, HospitalUI::WINDOW_HEIGHT}), "Nota Hospital");
     window.setPosition({1200, 50});
 
     HospitalUI ui("DejaVuSans.ttf", time);
