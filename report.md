@@ -12,6 +12,8 @@ When a patient gets all better (`condition <= 0`), their doctor is moved back in
 
 If the hospital runs out of doctors, patients will stay in the `waiting_room` but their `condition` will get 1 higher, indicating that it's getting worse. Patients in the `waiting_room` with `condition` levels of 10 or 11 are considered "in critical condition," and if they make it to level 12 they die.
 
+The UML class diagram for this prohect is in `Proj3_UML_Diagram.png` in this repository.
+
 ### GUI
 
 The GUI displays several useful pieces of information for tracking the workings of the hospital. On the right is a search feature where you can search for doctors and patients by ID number. You can type an ID with the number keys on your keyboard (don't use the number pad). You can type backspace to delete a character. All IDs are 3 digits long. You can switch between looking up a patient and looking up a doctor with 'p' and 'd', respectively. Doctors are all already in the system because they are employees of the hospital. Patients don't get added to the system until they are assigned to a doctor and checked in with the hospital.
@@ -23,6 +25,8 @@ In the bottom left is a button to increase the number of new patients coming in.
 The time is displayed in the bottom middle, along with the timestep button. Time jumps ahead one hour at a time when the timestep button is pressed.
 
 ## B-Tree
+
+The B-Tree, implemented by Trey, has an insert and a search feature, with a delete feature planned for project 4. The tree implements Nodes and Keys to help it keep track of all its data. The t size (minimum number of children) for the B-Trees was set to 10 for both the patients and the doctors. There are 50 doctors and 500 patients, so we felt like this was a good number to use to be able to have sizable nodes and several layers in our B-Tree so we could see the splitting behavior.
 
 ## Team contributions
 
@@ -48,3 +52,4 @@ The time is displayed in the bottom middle, along with the timestep button. Time
   - Doctor / patient assignments
   - Doctor shifts
   - Patient conditions updates
+- Report
