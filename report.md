@@ -15,7 +15,7 @@ If the hospital runs out of doctors, patients will stay in the `waiting_room` bu
 An example would be a patient coming in with a level 10 condition. They first will be put in the waiting room with top priority. They'll be matched with the best doctor available and be placed in the patient B-tree to receive treatment. After several timesteps, depending on the doctor's skill, the patient's condition will go down to 0 or below, and the patient will be discharged. The patient's doctor will then find a new patient to work on.
 
 The UML class diagram for this prohect is in `Proj3_UML_Diagram.png` in this repository.
-
+ 
 ### GUI
 
 The GUI displays several useful pieces of information for tracking the workings of the hospital. On the right is a search feature where you can search for doctors and patients by ID number. You can type an ID with the number keys on your keyboard (don't use the number pad). You can type backspace to delete a character. All IDs are 3 digits long. You can switch between looking up a patient and looking up a doctor with 'p' and 'd', respectively. Doctors are all already in the system because they are employees of the hospital. Patients don't get added to the system until they are assigned to a doctor and checked in with the hospital.
